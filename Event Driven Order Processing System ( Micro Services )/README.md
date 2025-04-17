@@ -74,6 +74,10 @@ graph TB
         PS --> PaymentDB[(Payment DB)]
         IS --> InventoryDB[(Inventory DB)]
         NS --> NotificationDB[(Notification DB)]
+        OS -.-> Redis[(Redis Cache)]
+        PS -.-> Redis
+        IS -.-> Redis
+        NS -.-> Redis
     end
 
     subgraph Event Types
@@ -82,6 +86,9 @@ graph TB
         KB --- IE[Inventory Events]
         KB --- NE[Notification Events]
     end
+
+    classDef cache fill:#f9f,stroke:#333,stroke-width:2px;
+    class Redis cache;
 ```
 
 ### Service Communication Flow
@@ -535,3 +542,29 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Spring Boot and Spring Cloud teams
 - Apache Kafka community
 - All contributors to this project 
+
+graph TD
+    subgraph Docker Environment
+        subgraph Kafka Ecosystem
+            Z[Zookeeper] --> K[Kafka Broker]
+            K --> |Manages Topics| T1[Order Events]
+            K --> |Manages Topics| T2[Payment Events]
+            K --> |Manages Topics| T3[Inventory Events]
+        end
+
+        subgraph Services
+            OS[Order Service Container] --> |Produces| K
+            PS[Payment Service Container] --> |Produces/Consumes| K
+            IS[Inventory Service Container] --> |Produces/Consumes| K
+            NS[Notification Service Container] --> |Consumes| K
+        end
+
+        subgraph Databases
+            PG1[(PostgreSQL Order)]
+            PG2[(PostgreSQL Payment)]
+            PG3[(PostgreSQL Inventory)]
+            R[(Redis)]
+        end
+    end
+
+    Z --> |Cluster Management| K 
