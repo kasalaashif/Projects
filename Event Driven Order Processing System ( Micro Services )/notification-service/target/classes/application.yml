@@ -1,0 +1,28 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: notification-service
+  
+  datasource:
+    url: jdbc:h2:mem:notificationdb
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
+    
+logging:
+  level:
+    com.example.notificationservice: DEBUG
+    org.springframework: INFO 
