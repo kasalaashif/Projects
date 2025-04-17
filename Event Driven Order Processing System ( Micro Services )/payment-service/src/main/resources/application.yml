@@ -1,0 +1,47 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: payment-service
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5433/paymentdb
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable.idempotence: true
+        acks: all
+    consumer:
+      group-id: payment-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        isolation.level: read_committed
+        spring.json.trusted.packages: "com.example.orderservice.event,com.example.paymentservice.event"
+  
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 2000
+    
+logging:
+  level:
+    com.example.paymentservice: DEBUG
+    org.springframework.kafka: INFO 
